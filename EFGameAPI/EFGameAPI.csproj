@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EFGameAPI.DB\EFGameAPI.DB.csproj" />
+    <ProjectReference Include="..\EFGameAPI.DAL\EFGameAPI.DAL.csproj" />
   </ItemGroup>
 
 </Project>
