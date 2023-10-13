@@ -1,4 +1,6 @@
 using EFGameAPI.DAL;
+using EFGameAPI.DAL.Interfaces;
+using EFGameAPI.DAL.Services;
 using EFGameAPI.DB.Domain;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +13,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<DataContext>();
-builder.Services.AddSingleton<IDataAccess, DataAccess>();
+
+builder.Services.AddScoped<IGameService, GameService>();
+builder.Services.AddScoped<IGenreService, GenreService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 

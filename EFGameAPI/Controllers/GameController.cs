@@ -1,4 +1,5 @@
 ﻿using EFGameAPI.DAL;
+using EFGameAPI.DAL.Interfaces;
 using EFGameAPI.DAL.Models;
 using EFGameAPI.DAL.Tools;
 using EFGameAPI.DB.Domain;
@@ -13,58 +14,64 @@ namespace EFGameAPI.Controllers
     [ApiController]
     public class GameController : ControllerBase
     {
-        private readonly IDataAccess _dataAccess;
-        private readonly DataContext _context;
-        private readonly DbSet<Game> _games;
-        private readonly List<GameDTO> _gamesList;
-        public GameController(IDataAccess dataAccess)
+        private readonly IGameService _gameService;
+        private readonly IEnumerable<Game> _gameList;
+        public GameController(IGameService gameService)
         {
-            _dataAccess = dataAccess;
-            _context = _dataAccess.DataContext;
-            _games = _context.Games;
-            _gamesList = _games.Include(x => x.Genres).ThenInclude(x => x.Genre).ToList().ToDTO();
+            _gameService = gameService;
+            _gameList = _gameService.Models.Include(game => game.Genres).ThenInclude(gameGenre => gameGenre.Genre).ToList();
         }
         [HttpGet]
         public IActionResult Get()
         {
-
-            return Ok(_gamesList);
+            return Ok(_gameList.ToDTO<GameDTO, Game>());
         }
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            GameDTO game = _gamesList.Where(x => x.Id == id).FirstOrDefault();
-
-            if (game is null)
+            if (_gameService.GetById(id) is null)
                 return NotFound();
 
-            return Ok(game);
+            return Ok(_gameService.GetById(id).ToDTO<GameDTO, Game>());
         }
         [HttpGet("genre/{id}")]
         public IActionResult GetByGenre(int id)
         {
-            List<GameDTO> games = _gamesList.Where(x => x.Genres.Any(g => g.Id == id)).ToList();
-
-            if (games is null)
+            if (_gameList.Where(x => x.Genres.Any(g => g.GenreId == id)) is null)
                 return NotFound();
 
-            return Ok(games);
+            return Ok(_gameList.Where(x => x.Genres.Any(g => g.GenreId == id)).ToDTO<GameDTO, Game>());
         }
         [HttpPost]
         public IActionResult Post([FromBody] GameCreate newGame)
         {
-            if (!ModelState.IsValid) { return BadRequest(); }
             try
             {
-                int lastId = _games.OrderByDescending(x => x.Id).FirstOrDefault()?.Id + 1 ?? 1;
-                _games.Add(new Game { Id = lastId, Title = newGame.Title, Resume = newGame.Resume });
-                _context.SaveChanges();
-                return Ok();
+                int lastId = _gameList.OrderByDescending(x => x.Id).FirstOrDefault()?.Id + 1 ?? 1;
+                if (_gameService.Create(newGame.ToEntity<Game, GameCreate>(lastId)))
+                {
+                    _gameService.Context.SaveChanges();
+                    return Ok();
+                }
             }
-            catch (Exception ex)
+            catch (Exception ex) { return BadRequest(ex.Message); }
+
+            return BadRequest();
+        }
+        [HttpDelete]
+        public IActionResult Delete(int id)
+        {
+            try
             {
-                return BadRequest(ex.Message);
+                if (_gameService.Delete(id))
+                {
+                    _gameService.Context.SaveChanges();
+                    return Ok();
+                }
             }
+            catch (Exception ex) { return BadRequest(ex.Message); }
+
+            return NotFound();
         }
     }
 }

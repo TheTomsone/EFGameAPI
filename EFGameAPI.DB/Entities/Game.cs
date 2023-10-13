@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EFGameAPI.DB.Entities
 {
-    public class Game
+    public class Game : IEntity
     {
         public int Id { get; set; }
         public string Title { get; set; }

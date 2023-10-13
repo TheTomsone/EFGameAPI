@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace EFGameAPI.DB.Entities
 {
-    public class Genre : IEntity
+    public interface IEntity
     {
-        public int Id { get; set; }
-        public string Label { get; set; }
-        public List<GameGenre> Games { get; set; }
+        int Id { get; set; }
     }
 }

@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EFGameAPI.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace EFGameAPI.DAL.Models
 {
-    public class GameCreate
+    public class GameCreate : IModelForm
     {
         [Required]
         public string Title { get; set; }

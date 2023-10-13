@@ -27,11 +27,7 @@ namespace EFGameAPI.DB.Domain.EntitiesConfig
                     .HasColumnType("VARCHAR(100)")
                     .IsRequired();
 
-            builder.Property(nameof(User.PasswordHash))
-                    .HasColumnType("VARBINARY(64)")
-                    .IsRequired();
-
-            builder.Property(nameof(User.Salt))
+            builder.Property(nameof(User.Password))
                     .HasColumnType("VARCHAR(100)")
                     .IsRequired();
 

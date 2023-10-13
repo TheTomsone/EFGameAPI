@@ -1,6 +1,8 @@
-﻿namespace EFGameAPI.DAL.Models
+﻿using EFGameAPI.Interfaces;
+
+namespace EFGameAPI.DAL.Models
 {
-    public class GameDTO
+    public class GameDTO : IModelDTO
     {
         public int Id { get; set; }
         public string Title { get; set; }
