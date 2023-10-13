@@ -17,19 +17,31 @@ namespace EFGameAPI.DAL.Services
 
         public string CheckPassword(string email)
         {
-            throw new NotImplementedException();
+            return Models.FirstOrDefault(x => x.Email == email).Password;
         }
         public User Login(string email)
         {
-            throw new NotImplementedException();
+            return Models.First(x => x.Email == email);
         }
         public bool Register(string email, string pwd, string username)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Models.Add(new User { Id = NextId, Email = email, Password = pwd, Username = username, RoleId = 1 });
+                Context.SaveChanges();
+                return true;
+            }
+            catch { return false; }
         }
-        public void SetRole(int idUser, int idRole)
+        public bool SetRole(int idUser, int idRole)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Models.First(x => x.Id == idUser).RoleId = idRole;
+                Context.SaveChanges();
+                return true;
+            }
+            catch { return false; }
         }
     }
 }

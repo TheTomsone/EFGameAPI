@@ -14,10 +14,25 @@ namespace EFGameAPI.DAL.Services
         public GameService(DataContext dataContext) : base(dataContext)
         {
         }
-
+        public bool AddGenre(int gameId, int genreId)
+        {
+            try
+            {
+                Context.GameGenres.Add(new GameGenre { GameId = gameId, GenreId = genreId });
+                Context.SaveChanges();
+                return true;
+            }
+            catch { return  false; }
+        }
         public bool AddFavorite(int userId, int gameId)
         {
-            return Context.UsersGame.Add(new UserGame { UserId = userId, GameId = gameId }).IsKeySet;
+            try
+            {
+                Context.UsersGame.Add(new UserGame { UserId = userId, GameId = gameId });
+                Context.SaveChanges();
+                return true;
+            }
+            catch { return false; }
         }
         public IEnumerable<Game> GetByGenre(int genreId)
         {

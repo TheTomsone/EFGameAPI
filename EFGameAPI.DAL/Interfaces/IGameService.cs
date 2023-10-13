@@ -11,6 +11,7 @@ namespace EFGameAPI.DAL.Interfaces
     {
         IEnumerable<Game> GetByGenre(int genreId);
         IEnumerable<Game> GetByUser(int userId);
+        bool AddGenre(int gameId, int genreId);
         bool AddFavorite(int userId, int gameId);
     }
 }

@@ -17,11 +17,23 @@ namespace EFGameAPI.DAL.Services
 
         public bool Create(TModel model)
         {
-            return Models.Add(model).IsKeySet;
+            try
+            {
+                Models.Add(model);
+                Context.SaveChanges();
+                return true;
+            }
+            catch { return false; }
         }
         public bool Delete(int id)
         {
-            return !Models.Remove(GetById(id)).IsKeySet;
+            try
+            {
+                Models.Remove(GetById(id));
+                Context.SaveChanges();
+                return true;
+            }
+            catch { return false; }
         }
     }
 }

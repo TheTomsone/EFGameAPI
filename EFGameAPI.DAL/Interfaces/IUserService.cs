@@ -11,7 +11,7 @@ namespace EFGameAPI.DAL.Interfaces
     {
         User Login(string email);
         bool Register(string email, string pwd, string username);
-        void SetRole(int idUser, int idRole);
+        bool SetRole(int idUser, int idRole);
         string CheckPassword(string email);
     }
 }

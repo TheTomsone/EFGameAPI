@@ -13,6 +13,7 @@ namespace EFGameAPI.DAL.Interfaces
     {
         DataContext Context { get; }
         DbSet<TModel> Models { get; }
+        int NextId { get; }
         IEnumerable<TModel> GetAll();
         TModel GetById(int id);
     }

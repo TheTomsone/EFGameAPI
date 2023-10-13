@@ -12,16 +12,25 @@ namespace EFGameAPI.DAL.Tools
     {
         public static TEntity ToEntity<TEntity, TModelForm>(this TModelForm modelForm, int id)
             where TEntity : class, IEntity, new()
-            where TModelForm : class, IModelForm
+            where TModelForm : class
         {
             TEntity entity = new();
             PropertyInfo[] entityProps = typeof(TEntity).GetProperties(), modelProps = typeof(TModelForm).GetProperties();
+            object? value;
 
             entity.Id = id;
             for (int i = 0; i < modelProps.Length; i++)
             {
-                object? value = modelProps[i].GetValue(modelForm);
-                if (value is not null) entityProps[i + 1].SetValue(entity, value);
+                if (modelProps[i].GetValue(modelForm) is IEnumerable<int> idList)
+                {
+
+                }
+                else
+                {
+                    value = modelProps[i].GetValue(modelForm);
+                    if (value is not null) entityProps[i + 1].SetValue(entity, value);
+                }
+
             }
 
             return entity;
@@ -38,10 +47,10 @@ namespace EFGameAPI.DAL.Tools
             {
                 if (entityProps[i].GetValue(entity) is IEnumerable<GameGenre> genres)
                 {
-                    List<GenresDTO> genresDTO = new();
+                    List<GenreDTO> genresDTO = new();
 
                     foreach (GameGenre genre in genres)
-                        genresDTO.Add(genre.Genre.ToDTO<GenresDTO, Genre>());
+                        genresDTO.Add(genre.Genre.ToDTO<GenreDTO, Genre>());
 
                     dtoProps[i].SetValue(dto, genresDTO);
                 }
@@ -53,6 +62,11 @@ namespace EFGameAPI.DAL.Tools
                         gamesDTO.Add(game.Game.ToDTO<GameDTO, Game>());
 
                     dtoProps[i].SetValue(dto, gamesDTO);
+                }
+                else if (entityProps[i].Name == "RoleId")
+                {
+                    value = entityProps[i].GetValue(entity);
+                    if (value is not null) dtoProps[i].SetValue(dto, (int)value == 1 ? "User" : "Admin");
                 }
                 else
                 {

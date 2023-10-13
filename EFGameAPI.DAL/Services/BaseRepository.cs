@@ -16,6 +16,9 @@ namespace EFGameAPI.DAL.Services
         private readonly DbSet<TModel> _models;
         public DataContext Context => _dataContext;
         public DbSet<TModel> Models => _models;
+
+        public int NextId => _models.OrderByDescending(x => x.Id).FirstOrDefault()?.Id + 1 ?? 1;
+
         public BaseRepository(DataContext dataContext) { _dataContext = dataContext; _models = _dataContext.Set<TModel>(); }
 
         public IEnumerable<TModel> GetAll()
