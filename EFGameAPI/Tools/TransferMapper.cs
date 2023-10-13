@@ -3,6 +3,7 @@ using EFGameAPI.DB.Entities;
 using EFGameAPI.Interfaces;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using System.Collections;
 using System.Reflection;
 
 namespace EFGameAPI.DAL.Tools
@@ -31,19 +32,33 @@ namespace EFGameAPI.DAL.Tools
         {
             TModelDTO dto = new();
             PropertyInfo[] dtoProps = typeof(TModelDTO).GetProperties(), entityProps = typeof(TEntity).GetProperties();
+            object? value;
 
             for (int i = 0; i < dtoProps.Length; i++)
             {
                 if (entityProps[i].GetValue(entity) is IEnumerable<GameGenre> genres)
+                {
+                    List<GenresDTO> genresDTO = new();
+
                     foreach (GameGenre genre in genres)
-                        dtoProps[i].SetValue(dto, genre.Genre.ToDTO<GenresDTO, Genre>());
+                        genresDTO.Add(genre.Genre.ToDTO<GenresDTO, Genre>());
 
-                if (entityProps[i].GetValue(entity) is IEnumerable<UserGame> games)
+                    dtoProps[i].SetValue(dto, genresDTO);
+                }
+                else if (entityProps[i].GetValue(entity) is IEnumerable<UserGame> games)
+                {
+                    List<GameDTO> gamesDTO = new();
+
                     foreach (UserGame game in games)
-                        dtoProps[i].SetValue(dto, game.Game.ToDTO<GameDTO, Game>());
+                        gamesDTO.Add(game.Game.ToDTO<GameDTO, Game>());
 
-                object? value = entityProps[i].GetValue(entity);
-                if (value is not null) dtoProps[i].SetValue(dto, value);
+                    dtoProps[i].SetValue(dto, gamesDTO);
+                }
+                else
+                {
+                    value = entityProps[i].GetValue(entity);
+                    if (value is not null) dtoProps[i].SetValue(dto, value);
+                }
             }
 
             return dto;
